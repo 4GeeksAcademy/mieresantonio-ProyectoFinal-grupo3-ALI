@@ -5,7 +5,7 @@ from . import models
 from .models import db
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.theme import Bootstrap4Theme
-
+from models import User, LearningPath, Module, Lesson, Quiz, UserProgress
 
 def setup_admin(app):
     app.secret_key = os.environ.get('FLASK_APP_KEY', 'sample key')
@@ -16,3 +16,9 @@ def setup_admin(app):
         # Verify that the object is a SQLAlchemy model before adding it to the admin. 
         if inspect.isclass(obj) and issubclass(obj, db.Model):
             admin.add_view(ModelView(obj, db.session))
+            admin.add_view(ModelView(User, db.session))
+            admin.add_view(ModelView(LearningPath, db.session))
+            admin.add_view(ModelView(Module, db.session))
+            admin.add_view(ModelView(Lesson, db.session))
+            admin.add_view(ModelView(Quiz, db.session))
+            admin.add_view(ModelView(UserProgress, db.session))
