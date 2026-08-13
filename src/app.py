@@ -6,10 +6,11 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_jwt_extended import create_access_token
 
 # from models import Person
 
@@ -64,6 +65,37 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0  # avoid cache memory
     return response
+
+
+# ---- AUTH ----
+
+@api.route('/signup', methods=['POST'])
+def signup():
+    body = request.json
+    if not body.get("email") or not body.get("password"):
+        return jsonify({"error": "Email and password are required"}), 400
+    existing_user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    if existing_user:
+        return jsonify({"error": "Email already exists"}), 400
+    user = User(
+        email=body["email"],
+        password=body["password"],
+        is_active=True,
+        role=body.get("role", "student")
+    )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.serialize()), 201
+
+
+@api.route('/login', methods=['POST'])
+def login():
+    body = request.json
+    user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    if not user or user.password != body["password"]:
+        return jsonify({"error": "Invalid credentials"}), 401
+    token = create_access_token(identity=str(user.id))
+    return jsonify({"token": token, "user": user.serialize()}), 200
 
 
 # this only runs if `$ python src/main.py` is executed
