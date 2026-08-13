@@ -2,39 +2,10 @@ from flask import request, jsonify, Blueprint
 from api.models import db, User, LearningPath, Module, Lesson, Quiz, UserProgress
 from api.utils import APIException
 from flask_cors import CORS
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
 CORS(api)
-
-# ---- AUTH ----
-
-@api.route('/signup', methods=['POST'])
-def signup():
-    body = request.json
-    if not body.get("email") or not body.get("password"):
-        return jsonify({"error": "Email and password are required"}), 400
-    existing_user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
-    if existing_user:
-        return jsonify({"error": "Email already exists"}), 400
-    user = User(
-        email=body["email"],
-        password=body["password"],
-        is_active=True,
-        role=body.get("role", "student")
-    )
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user.serialize()), 201
-
-@api.route('/login', methods=['POST'])
-def login():
-    body = request.json
-    user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
-    if not user or user.password != body["password"]:
-        return jsonify({"error": "Invalid credentials"}), 401
-    token = create_access_token(identity=str(user.id))
-    return jsonify({"token": token, "user": user.serialize()}), 200
 
 # ---- USERS ----
 
