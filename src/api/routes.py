@@ -1,21 +1,53 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint
 from api.models import db, User, LearningPath, Module, Lesson, Quiz, UserProgress
-from api.utils import generate_sitemap, APIException
+from api.utils import APIException
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
 CORS(api)
 
+# ---- AUTH ----
+
+@api.route('/signup', methods=['POST'])
+def signup():
+    body = request.json
+    if not body.get("email") or not body.get("password"):
+        return jsonify({"error": "Email and password are required"}), 400
+    existing_user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    if existing_user:
+        return jsonify({"error": "Email already exists"}), 400
+    user = User(
+        email=body["email"],
+        password=body["password"],
+        is_active=True,
+        role=body.get("role", "student")
+    )
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.serialize()), 201
+
+@api.route('/login', methods=['POST'])
+def login():
+    body = request.json
+    user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    if not user or user.password != body["password"]:
+        return jsonify({"error": "Invalid credentials"}), 401
+    token = create_access_token(identity=str(user.id))
+    return jsonify({"token": token, "user": user.serialize()}), 200
+
 # ---- USERS ----
 
 @api.route('/users', methods=['GET'])
+@jwt_required()
 def get_users():
-    users = User.query.all()
+    users = db.session.execute(db.select(User)).scalars().all()
     return jsonify([u.serialize() for u in users]), 200
 
 @api.route('/users/<int:user_id>', methods=['GET'])
+@jwt_required()
 def get_user(user_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
     return jsonify(user.serialize()), 200
@@ -24,17 +56,18 @@ def get_user(user_id):
 
 @api.route('/learning-paths', methods=['GET'])
 def get_learning_paths():
-    paths = LearningPath.query.all()
+    paths = db.session.execute(db.select(LearningPath)).scalars().all()
     return jsonify([{"id": p.id, "title": p.title} for p in paths]), 200
 
 @api.route('/learning-paths/<int:path_id>', methods=['GET'])
 def get_learning_path(path_id):
-    path = LearningPath.query.get(path_id)
+    path = db.session.get(LearningPath, path_id)
     if not path:
         return jsonify({"error": "Learning path not found"}), 404
     return jsonify({"id": path.id, "title": path.title}), 200
 
 @api.route('/learning-paths', methods=['POST'])
+@jwt_required()
 def create_learning_path():
     body = request.json
     path = LearningPath(title=body["title"])
@@ -46,17 +79,18 @@ def create_learning_path():
 
 @api.route('/modules', methods=['GET'])
 def get_modules():
-    modules = Module.query.all()
+    modules = db.session.execute(db.select(Module)).scalars().all()
     return jsonify([{"id": m.id, "title": m.title, "level": m.level, "learning_path_id": m.learning_path_id} for m in modules]), 200
 
 @api.route('/modules/<int:module_id>', methods=['GET'])
 def get_module(module_id):
-    module = Module.query.get(module_id)
+    module = db.session.get(Module, module_id)
     if not module:
         return jsonify({"error": "Module not found"}), 404
     return jsonify({"id": module.id, "title": module.title, "level": module.level}), 200
 
 @api.route('/modules', methods=['POST'])
+@jwt_required()
 def create_module():
     body = request.json
     module = Module(title=body["title"], level=body.get("level"), learning_path_id=body["learning_path_id"])
@@ -68,17 +102,18 @@ def create_module():
 
 @api.route('/lessons', methods=['GET'])
 def get_lessons():
-    lessons = Lesson.query.all()
+    lessons = db.session.execute(db.select(Lesson)).scalars().all()
     return jsonify([{"id": l.id, "title": l.title, "module_id": l.module_id, "order_number": l.order_number} for l in lessons]), 200
 
 @api.route('/lessons/<int:lesson_id>', methods=['GET'])
 def get_lesson(lesson_id):
-    lesson = Lesson.query.get(lesson_id)
+    lesson = db.session.get(Lesson, lesson_id)
     if not lesson:
         return jsonify({"error": "Lesson not found"}), 404
     return jsonify({"id": lesson.id, "title": lesson.title, "content": lesson.content}), 200
 
 @api.route('/lessons', methods=['POST'])
+@jwt_required()
 def create_lesson():
     body = request.json
     lesson = Lesson(
@@ -95,12 +130,13 @@ def create_lesson():
 
 @api.route('/quizzes/<int:lesson_id>', methods=['GET'])
 def get_quiz(lesson_id):
-    quiz = Quiz.query.filter_by(lesson_id=lesson_id).first()
+    quiz = db.session.execute(db.select(Quiz).filter_by(lesson_id=lesson_id)).scalar()
     if not quiz:
         return jsonify({"error": "Quiz not found"}), 404
     return jsonify({"id": quiz.id, "questions": quiz.questions_data}), 200
 
 @api.route('/quizzes', methods=['POST'])
+@jwt_required()
 def create_quiz():
     body = request.json
     quiz = Quiz(lesson_id=body["lesson_id"], questions_data=body["questions_data"])
@@ -111,11 +147,13 @@ def create_quiz():
 # ---- USER PROGRESS ----
 
 @api.route('/progress/<int:user_id>', methods=['GET'])
+@jwt_required()
 def get_user_progress(user_id):
-    progress = UserProgress.query.filter_by(user_id=user_id).all()
+    progress = db.session.execute(db.select(UserProgress).filter_by(user_id=user_id)).scalars().all()
     return jsonify([{"lesson_id": p.lesson_id, "is_completed": p.is_completed, "quiz_score": p.quiz_score} for p in progress]), 200
 
 @api.route('/progress', methods=['POST'])
+@jwt_required()
 def update_progress():
     body = request.json
     progress = UserProgress(
