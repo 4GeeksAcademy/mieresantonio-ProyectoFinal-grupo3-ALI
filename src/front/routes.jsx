@@ -10,8 +10,8 @@ import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 //Aqui abajo se agrega lo nuevos componentes a importar 
-import { Login } from "../components/Login";
-import { Register } from "../components/Register";
+import { Login } from "./components/Login";
+import { Register } from "./components/Register";
 import { Dashboard } from "./pages/Dashboard";
 
 export const router = createBrowserRouter(
