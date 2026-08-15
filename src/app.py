@@ -69,7 +69,7 @@ def serve_any_other_file(path):
 
 # ---- AUTH ----
 
-@api.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     body = request.json
     if not body.get("email") or not body.get("password"):
@@ -88,7 +88,7 @@ def signup():
     return jsonify(user.serialize()), 201
 
 
-@api.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     body = request.json
     user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
