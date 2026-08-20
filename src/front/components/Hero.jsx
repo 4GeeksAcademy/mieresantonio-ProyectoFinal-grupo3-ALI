@@ -1,0 +1,53 @@
+import React from "react";
+
+const TopBar = () => {
+    return (
+        <div className="d-flex justify-content-between align-items-center py-3">
+            <input
+                type="text"
+                className="form-control"
+                placeholder="¿Qué quieres aprender hoy?"
+                style={{ maxWidth: "350px" }}
+            />
+
+            <div className="d-flex align-items-center gap-4">
+                <span>Mis Cursos</span>
+                <span className="position-relative">
+                    <i className="fa-regular fa-bell"></i>
+                    <span className="badge bg-danger rounded-circle position-absolute" style={{ top: "-5px", right: "-8px", width: "10px", height: "10px" }}></span>
+                </span>
+            </div>
+        </div>
+    );
+};
+
+export const Hero = () => {
+    return (
+        <div className="container">
+            <TopBar />
+
+            <div className="text-center py-5">
+                <span className="badge bg-primary mb-3">
+                    Nueva ruta disponible: Smart Contracts en Solidity
+                </span>
+
+                <h1 className="mb-3">
+                    Domina el futuro con <span className="text-primary">Blockchain</span>
+                </h1>
+
+                <p className="lead text-muted mb-4">
+                    Rutas de prendizaje guiadas desde cero hasta experto. Sin videos
+                    interminables, solo contenido técnico de calidad, lectura profunda
+                    y evaluaciones prácticas.
+                </p>
+
+                <button className="btn btn-primary btn-lg me-2">
+                    Empieza a aprender gratis
+                </button>
+                <button className="btn btn-outline-secondary btn-lg">
+                    Ver plan de estudios
+                </button>
+            </div>
+        </div>
+    );
+};
