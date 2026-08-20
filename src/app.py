@@ -79,20 +79,19 @@ def signup():
         return jsonify({"error": "Email already exists"}), 400
     user = User(
         email=body["email"],
-        password=body["password"],
         is_active=True,
         role=body.get("role", "student")
     )
+    user.set_password(body["password"])
     db.session.add(user)
     db.session.commit()
     return jsonify(user.serialize()), 201
-
 
 @app.route('/api/login', methods=['POST'])
 def login():
     body = request.json
     user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
-    if not user or user.password != body["password"]:
+    if not user or not user.check_password(body["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
     token = create_access_token(identity=str(user.id))
     return jsonify({"token": token, "user": user.serialize()}), 200
