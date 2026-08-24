@@ -13,6 +13,7 @@ import { Demo } from "./pages/Demo";
 import { Login } from "./components/Login";
 import { Register } from "./components/Register";
 import { Dashboard } from "./pages/Dashboard";
+import { Courses } from "./pages/Courses";
 import { Admin } from "./pages/Admin";
 
 export const router = createBrowserRouter(
@@ -42,6 +43,8 @@ export const router = createBrowserRouter(
         </div>
       } />
       <Route path="/dashboard" element={<Dashboard />} />
+      {/* Hay que confirmar con nuestro lider Luis las rutas de courses */}
+      <Route path="/courses" element={<Courses />} />
       <Route path="/admin" element={<Admin />} />
     </Route>
   )
