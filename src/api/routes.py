@@ -7,6 +7,15 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 api = Blueprint('api', __name__)
 CORS(api)
 
+@api.route('/hello', methods=['POST', 'GET'])
+def handle_hello():
+
+    response_body = {
+        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+    }
+
+    return jsonify(response_body), 200
+
 # ---- USERS ----
 
 @api.route('/users', methods=['GET'])
@@ -28,23 +37,30 @@ def get_user(user_id):
 @api.route('/learning-paths', methods=['GET'])
 def get_learning_paths():
     paths = db.session.execute(db.select(LearningPath)).scalars().all()
-    return jsonify([{"id": p.id, "title": p.title} for p in paths]), 200
+    return jsonify([{"id": p.id, "title": p.title, "image_url": p.image_url, "description": p.description, "time_required": p.time_required, "number_of_modules": len(p.modules)} for p in paths]), 200
 
 @api.route('/learning-paths/<int:path_id>', methods=['GET'])
 def get_learning_path(path_id):
     path = db.session.get(LearningPath, path_id)
     if not path:
         return jsonify({"error": "Learning path not found"}), 404
-    return jsonify({"id": path.id, "title": path.title}), 200
+    return jsonify({
+        "id": path.id,
+        "title": path.title,
+        "image_url": path.image_url,
+        "description": path.description,
+        "time_required": path.time_required,
+        "number_of_modules": len(path.modules),
+        "modules": [{"id": m.id, "title": m.title} for m in path.modules]}), 200
 
 @api.route('/learning-paths', methods=['POST'])
 @jwt_required()
 def create_learning_path():
     body = request.json
-    path = LearningPath(title=body["title"])
+    path = LearningPath(title=body["title"], image_url=body["image_url"], description=body["description"], time_required=body["time_required"])
     db.session.add(path)
     db.session.commit()
-    return jsonify({"id": path.id, "title": path.title}), 201
+    return jsonify({"id": path.id, "title": path.title, "image_url": path.image_url, "description": path.description, "time_required": path.time_required}), 201
 
 # ---- MODULES ----
 
@@ -136,3 +152,11 @@ def update_progress():
     db.session.add(progress)
     db.session.commit()
     return jsonify({"message": "Progress saved"}), 201
+
+
+@api.route('/dashboard', methods=['GET'])
+@jwt_required()
+def handle_dashboard():
+    user_id = get_jwt_identity()
+    user = db.get_or_404(User, int(user_id))
+    return jsonify({"message": "Bienvenido", "user": user.serialize()}), 200

@@ -15,6 +15,7 @@ import { Register } from "./components/Register";
 import { Dashboard } from "./pages/Dashboard";
 import { Courses } from "./pages/Courses";
 import { Admin } from "./pages/Admin";
+import CoursePage from "./pages/CoursePage";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -46,6 +47,7 @@ export const router = createBrowserRouter(
       {/* Hay que confirmar con nuestro lider Luis las rutas de courses */}
       <Route path="/courses" element={<Courses />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/course/:theId" element={<CoursePage />} />
     </Route>
   )
 );
