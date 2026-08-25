@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 
 export const Admin = () => {
     const [formAbierto, setFormAbierto] = useState(null);
+    const [tituloLeccion, setTituloLeccion] = useState("");
+    const [contenidoLeccion, setContenidoLeccion] = useState("");
+    const [rutas, setRutas] = useState([]);
+
     const stats = {
         rutas: 4,
         modulos: 6,
         lecciones: 8,
         usuarios: 2
     };
-
-    const [rutas, setRutas] = useState([]);
 
     useEffect(() => {
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -18,6 +20,30 @@ export const Admin = () => {
             .then((data) => setRutas(data))
             .catch((err) => console.log("Error cargando rutas:", err));
     }, []);
+
+    const guardarLeccion = async (rutaId) => {
+        console.log("BOTÓN PRESIONADO", rutaId);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        try {
+            const res = await fetch(backendUrl + "/api/lessons", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify({
+                    title: tituloLeccion,
+                    content: contenidoLeccion,
+                    module_id: 1,
+                    order_number: 1
+                })
+            });
+            const data = await res.json();
+            console.log("Respuesta:", data);
+        } catch (err) {
+            console.log("Error guardando:", err);
+        }
+    };
 
     return (
         <div className="container py-4">
@@ -55,6 +81,7 @@ export const Admin = () => {
                     </div>
                 </div>
             </div>
+
             <div className="card border">
                 <div className="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 className="fw-bold mb-0">Rutas de aprendizaje</h5>
@@ -78,13 +105,28 @@ export const Admin = () => {
                                 <div className="border-top mt-3 pt-3">
                                     <div className="mb-2">
                                         <label className="form-label small fw-bold">Título de la lección</label>
-                                        <input type="text" className="form-control form-control-sm" placeholder="Ej. Qué es una llave privada" />
+                                        <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            placeholder="Ej. Qué es una llave privada"
+                                            value={tituloLeccion}
+                                            onChange={(e) => setTituloLeccion(e.target.value)}
+                                        />
                                     </div>
                                     <div className="mb-2">
                                         <label className="form-label small fw-bold">Contenido</label>
-                                        <textarea className="form-control form-control-sm" rows="4" placeholder="Escribe el contenido de la lección..."></textarea>
+                                        <textarea
+                                            className="form-control form-control-sm"
+                                            rows="4"
+                                            placeholder="Escribe el contenido de la lección..."
+                                            value={contenidoLeccion}
+                                            onChange={(e) => setContenidoLeccion(e.target.value)}
+                                        ></textarea>
                                     </div>
-                                    <button className="btn btn-dark btn-sm rounded-pill px-3">
+                                    <button
+                                        className="btn btn-dark btn-sm rounded-pill px-3"
+                                        onClick={() => guardarLeccion(ruta.id)}
+                                    >
                                         Guardar lección
                                     </button>
                                 </div>
