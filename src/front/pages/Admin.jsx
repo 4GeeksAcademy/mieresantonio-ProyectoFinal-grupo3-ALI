@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Admin = () => {
     const [formAbierto, setFormAbierto] = useState(null);
@@ -9,20 +9,15 @@ export const Admin = () => {
         usuarios: 2
     };
 
-    const rutas = [
-        {
-            id: 1,
-            titulo: "Fundamentos de Blockchain",
-            nivel: "Principiante",
-            lecciones: ["¿Qué es Bitcoin?", "Wallets y claves privadas"]
-        },
-        {
-            id: 2,
-            titulo: "Introducción a DeFi",
-            nivel: "Intermedio",
-            lecciones: ["¿Qué es un DEX?"]
-        }
-    ];
+    const [rutas, setRutas] = useState([]);
+
+    useEffect(() => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        fetch(backendUrl + "/api/learning-paths")
+            .then((res) => res.json())
+            .then((data) => setRutas(data))
+            .catch((err) => console.log("Error cargando rutas:", err));
+    }, []);
 
     return (
         <div className="container py-4">
@@ -70,11 +65,8 @@ export const Admin = () => {
                 <div className="card-body">
                     {rutas.map((ruta) => (
                         <div className="border rounded p-3 mb-3" key={ruta.id}>
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <span className="fw-bold">{ruta.titulo}</span>
-                                    <span className="badge bg-dark rounded-pill ms-2">{ruta.nivel}</span>
-                                </div>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span className="fw-bold">{ruta.title}</span>
                                 <button
                                     className="btn btn-sm btn-outline-dark rounded-pill"
                                     onClick={() => setFormAbierto(formAbierto === ruta.id ? null : ruta.id)}
@@ -82,11 +74,6 @@ export const Admin = () => {
                                     {formAbierto === ruta.id ? "Cancelar" : "+ Lección"}
                                 </button>
                             </div>
-                            {ruta.lecciones.map((leccion, i) => (
-                                <div className="small text-secondary py-1" key={i}>
-                                    {i + 1}. {leccion}
-                                </div>
-                            ))}
                             {formAbierto === ruta.id && (
                                 <div className="border-top mt-3 pt-3">
                                     <div className="mb-2">
