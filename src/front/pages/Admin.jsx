@@ -5,6 +5,8 @@ export const Admin = () => {
     const [tituloLeccion, setTituloLeccion] = useState("");
     const [contenidoLeccion, setContenidoLeccion] = useState("");
     const [rutas, setRutas] = useState([]);
+    const [modulos, setModulos] = useState([]);
+    const [moduloElegido, setModuloElegido] = useState("");
 
     const stats = {
         rutas: 4,
@@ -19,6 +21,11 @@ export const Admin = () => {
             .then((res) => res.json())
             .then((data) => setRutas(data))
             .catch((err) => console.log("Error cargando rutas:", err));
+
+        fetch(backendUrl + "/api/modules")
+            .then((res) => res.json())
+            .then((data) => setModulos(data))
+            .catch((err) => console.log("Error cargando módulos:", err));
     }, []);
 
     const guardarLeccion = async (rutaId) => {
@@ -34,7 +41,7 @@ export const Admin = () => {
                 body: JSON.stringify({
                     title: tituloLeccion,
                     content: contenidoLeccion,
-                    module_id: 1,
+                    module_id: Number(moduloElegido),
                     order_number: 1
                 })
             });
@@ -103,6 +110,21 @@ export const Admin = () => {
                             </div>
                             {formAbierto === ruta.id && (
                                 <div className="border-top mt-3 pt-3">
+                                    <div className="mb-2">
+                                        <label className="form-label small fw-bold">Módulo</label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={moduloElegido}
+                                            onChange={(e) => setModuloElegido(e.target.value)}
+                                        >
+                                            <option value="">Selecciona un módulo</option>
+                                            {modulos.map((m) => (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <div className="mb-2">
                                         <label className="form-label small fw-bold">Título de la lección</label>
                                         <input
