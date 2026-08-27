@@ -7,6 +7,7 @@ export const Admin = () => {
     const [rutas, setRutas] = useState([]);
     const [modulos, setModulos] = useState([]);
     const [moduloElegido, setModuloElegido] = useState("");
+    const [usuario, setUsuario] = useState(null);
 
     const stats = {
         rutas: 4,
@@ -16,6 +17,12 @@ export const Admin = () => {
     };
 
     useEffect(() => {
+
+        const userGuardado = localStorage.getItem("user");
+        if (userGuardado) {
+            setUsuario(JSON.parse(userGuardado));
+        }
+
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
         fetch(backendUrl + "/api/learning-paths")
             .then((res) => res.json())
@@ -47,10 +54,26 @@ export const Admin = () => {
             });
             const data = await res.json();
             console.log("Respuesta:", data);
+
+            setTituloLeccion("");
+            setContenidoLeccion("");
+            setModuloElegido("");
+            setFormAbierto(null);
         } catch (err) {
             console.log("Error guardando:", err);
         }
     };
+
+    if (!usuario || usuario.role !== "admin") {
+        return (
+            <div className="container py-5 text-center">
+                <h3 className="fw-bold">Acceso restringido</h3>
+                <p className="text-secondary">
+                    Esta sección es solo para administradores.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="container py-4">
