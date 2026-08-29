@@ -1,7 +1,9 @@
 export const initialStore = () => {
   return {
     message: null,
-    token: null,
+    // Si ya había una sesión guardada (localStorage), la recuperamos al
+    // recargar la página, para no cerrar la sesión sin querer.
+    token: localStorage.getItem("token") || null,
     user: null,
     modules: [],
   };
@@ -28,6 +30,13 @@ export default function storeReducer(store, action = {}) {
       return {
         ...store,
         token: action.payload,
+      };
+
+    // Guarda los datos del usuario logueado
+    case "set_user":
+      return {
+        ...store,
+        user: action.payload,
       };
 
     // Limpia los datos al cerrar sesión

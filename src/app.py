@@ -3,6 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
+from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
@@ -18,6 +19,7 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
+CORS(app)
 app.url_map.strict_slashes = False
 
 # database condiguration
@@ -58,6 +60,8 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
+
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
@@ -74,11 +78,13 @@ def signup():
     body = request.json
     if not body.get("email") or not body.get("password"):
         return jsonify({"error": "Email and password are required"}), 400
-    existing_user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    existing_user = db.session.execute(
+        db.select(User).filter_by(email=body["email"])).scalar()
     if existing_user:
         return jsonify({"error": "Email already exists"}), 400
     user = User(
         email=body["email"],
+        username=body.get("username"),
         is_active=True,
         role=body.get("role", "student")
     )
@@ -87,10 +93,12 @@ def signup():
     db.session.commit()
     return jsonify(user.serialize()), 201
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     body = request.json
-    user = db.session.execute(db.select(User).filter_by(email=body["email"])).scalar()
+    user = db.session.execute(
+        db.select(User).filter_by(email=body["email"])).scalar()
     if not user or not user.check_password(body["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
     token = create_access_token(identity=str(user.id))

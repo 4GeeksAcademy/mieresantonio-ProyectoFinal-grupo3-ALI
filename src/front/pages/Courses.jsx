@@ -5,14 +5,17 @@ import { CourseCard } from "../components/CourseCard";
 
 export const Courses = () => {
     const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [activeLevel, setActiveLevel] = useState("Todas las Rutas");
 
-    // Carga los cursos al montar la página.
-    // TODO (conectar con backend): cuando getCourses() haga un fetch real,
-    // toda esta parte se queda igual, solo cambia por dentro.
+    // Carga los cursos reales desde el backend al montar la página.
     useEffect(() => {
-        getCourses().then((data) => setCourses(data));
+        getCourses()
+            .then((data) => setCourses(data))
+            .catch((err) => setError(err.message))
+            .finally(() => setLoading(false));
     }, []);
 
     // Filtra en el navegador (client-side) por texto y por nivel.
@@ -62,6 +65,12 @@ export const Courses = () => {
                 activeLevel={activeLevel}
                 onLevelChange={setActiveLevel}
             />
+
+            {loading && <p className="text-muted">Cargando rutas de aprendizaje...</p>}
+            {error && <div className="alert alert-danger">{error}</div>}
+            {!loading && !error && filteredCourses.length === 0 && (
+                <p className="text-muted">No hay rutas de aprendizaje todavía.</p>
+            )}
 
             {/* Grilla de tarjetas de cursos */}
             <div className="row g-4 mb-5">
