@@ -11,7 +11,7 @@ from api.models import db, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, JWTManager
 
 # from models import Person
 
@@ -19,6 +19,9 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = os.getenv(
+    "FLASK_APP_KEY", "super-secret-fallback")
+jwt = JWTManager(app)
 CORS(app)
 app.url_map.strict_slashes = False
 
