@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Admin = () => {
     const [formAbierto, setFormAbierto] = useState(null);
+    const [tituloLeccion, setTituloLeccion] = useState("");
+    const [contenidoLeccion, setContenidoLeccion] = useState("");
+    const [rutas, setRutas] = useState([]);
+    const [modulos, setModulos] = useState([]);
+    const [moduloElegido, setModuloElegido] = useState("");
+    const [usuario, setUsuario] = useState(null);
+
     const stats = {
         rutas: 4,
         modulos: 6,
@@ -9,20 +16,64 @@ export const Admin = () => {
         usuarios: 2
     };
 
-    const rutas = [
-        {
-            id: 1,
-            titulo: "Fundamentos de Blockchain",
-            nivel: "Principiante",
-            lecciones: ["¿Qué es Bitcoin?", "Wallets y claves privadas"]
-        },
-        {
-            id: 2,
-            titulo: "Introducción a DeFi",
-            nivel: "Intermedio",
-            lecciones: ["¿Qué es un DEX?"]
+    useEffect(() => {
+
+        const userGuardado = localStorage.getItem("user");
+        if (userGuardado) {
+            setUsuario(JSON.parse(userGuardado));
         }
-    ];
+
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        fetch(backendUrl + "/api/learning-paths")
+            .then((res) => res.json())
+            .then((data) => setRutas(data))
+            .catch((err) => console.log("Error cargando rutas:", err));
+
+        fetch(backendUrl + "/api/modules")
+            .then((res) => res.json())
+            .then((data) => setModulos(data))
+            .catch((err) => console.log("Error cargando módulos:", err));
+    }, []);
+
+    const guardarLeccion = async (rutaId) => {
+        console.log("BOTÓN PRESIONADO", rutaId);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        try {
+            const res = await fetch(backendUrl + "/api/lessons", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify({
+                    title: tituloLeccion,
+                    content: contenidoLeccion,
+                    module_id: Number(moduloElegido),
+                    order_number: 1
+                })
+            });
+            const data = await res.json();
+            console.log("Respuesta:", data);
+
+            setTituloLeccion("");
+            setContenidoLeccion("");
+            setModuloElegido("");
+            setFormAbierto(null);
+        } catch (err) {
+            console.log("Error guardando:", err);
+        }
+    };
+
+    if (!usuario || usuario.role !== "admin") {
+        return (
+            <div className="container py-5 text-center">
+                <h3 className="fw-bold">Acceso restringido</h3>
+                <p className="text-secondary">
+                    Esta sección es solo para administradores.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="container py-4">
@@ -60,6 +111,7 @@ export const Admin = () => {
                     </div>
                 </div>
             </div>
+
             <div className="card border">
                 <div className="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 className="fw-bold mb-0">Rutas de aprendizaje</h5>
@@ -70,11 +122,8 @@ export const Admin = () => {
                 <div className="card-body">
                     {rutas.map((ruta) => (
                         <div className="border rounded p-3 mb-3" key={ruta.id}>
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <span className="fw-bold">{ruta.titulo}</span>
-                                    <span className="badge bg-dark rounded-pill ms-2">{ruta.nivel}</span>
-                                </div>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span className="fw-bold">{ruta.title}</span>
                                 <button
                                     className="btn btn-sm btn-outline-dark rounded-pill"
                                     onClick={() => setFormAbierto(formAbierto === ruta.id ? null : ruta.id)}
@@ -82,22 +131,47 @@ export const Admin = () => {
                                     {formAbierto === ruta.id ? "Cancelar" : "+ Lección"}
                                 </button>
                             </div>
-                            {ruta.lecciones.map((leccion, i) => (
-                                <div className="small text-secondary py-1" key={i}>
-                                    {i + 1}. {leccion}
-                                </div>
-                            ))}
                             {formAbierto === ruta.id && (
                                 <div className="border-top mt-3 pt-3">
                                     <div className="mb-2">
+                                        <label className="form-label small fw-bold">Módulo</label>
+                                        <select
+                                            className="form-select form-select-sm"
+                                            value={moduloElegido}
+                                            onChange={(e) => setModuloElegido(e.target.value)}
+                                        >
+                                            <option value="">Selecciona un módulo</option>
+                                            {modulos.map((m) => (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="mb-2">
                                         <label className="form-label small fw-bold">Título de la lección</label>
-                                        <input type="text" className="form-control form-control-sm" placeholder="Ej. Qué es una llave privada" />
+                                        <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            placeholder="Ej. Qué es una llave privada"
+                                            value={tituloLeccion}
+                                            onChange={(e) => setTituloLeccion(e.target.value)}
+                                        />
                                     </div>
                                     <div className="mb-2">
                                         <label className="form-label small fw-bold">Contenido</label>
-                                        <textarea className="form-control form-control-sm" rows="4" placeholder="Escribe el contenido de la lección..."></textarea>
+                                        <textarea
+                                            className="form-control form-control-sm"
+                                            rows="4"
+                                            placeholder="Escribe el contenido de la lección..."
+                                            value={contenidoLeccion}
+                                            onChange={(e) => setContenidoLeccion(e.target.value)}
+                                        ></textarea>
                                     </div>
-                                    <button className="btn btn-dark btn-sm rounded-pill px-3">
+                                    <button
+                                        className="btn btn-dark btn-sm rounded-pill px-3"
+                                        onClick={() => guardarLeccion(ruta.id)}
+                                    >
                                         Guardar lección
                                     </button>
                                 </div>
