@@ -36,14 +36,11 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
-app.config["JWT_SECRET_KEY"] = os.getenv(
-    "JWT_SECRET_KEY", "cambiar-esto-en-produccion")
-jwt = JWTManager(app)
 
 # add the admin
 setup_admin(app)
 
-# add the admin
+# add the CLI commands (flask insert-test-data, etc.)
 setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
