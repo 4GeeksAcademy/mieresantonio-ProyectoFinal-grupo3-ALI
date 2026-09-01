@@ -29,5 +29,20 @@ const MOCK_QUIZ = {
 };
 
 export const getQuizByLesson = async (lessonId) => {
-    return Promise.resolve(MOCK_QUIZ);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    try {
+        const res = await fetch(backendUrl + "/api/quizzes/" + lessonId);
+        if (!res.ok) return MOCK_QUIZ;
+        const data = await res.json();
+        return {
+            id: data.id,
+            lesson_id: lessonId,
+            title: "Evaluación",
+            description: "Pon a prueba tus conocimientos.",
+            questions_data: data.questions
+        };
+    } catch (err) {
+        console.log("Error cargando quiz, usando mock:", err);
+        return MOCK_QUIZ;
+    }
 };

@@ -85,6 +85,15 @@ export const QuizPage = () => {
                                 ? "Aprobaste la evaluación."
                                 : "Necesitas 70% para aprobar. Puedes intentarlo de nuevo."}
                         </p>
+                        <button
+                            className="btn btn-outline-dark rounded-pill px-4 mt-3"
+                            onClick={() => {
+                                setRespuestas({});
+                                setEnviado(false);
+                            }}
+                        >
+                            Intentar de nuevo
+                        </button>
                     </div>
                 </div>
             )}
