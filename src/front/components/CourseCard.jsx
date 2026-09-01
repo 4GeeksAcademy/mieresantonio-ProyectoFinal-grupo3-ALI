@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-// Los colores del badge de sus niveles, según el diseño.
+// Colores del badge de nivel, según el diseño.
 const LEVEL_BADGE_CLASS = {
 	Principiante: "bg-info-subtle text-info-emphasis",
 	Intermedio: "bg-warning-subtle text-warning-emphasis",
@@ -13,16 +13,26 @@ export const CourseCard = ({ course }) => {
 
 	return (
 		<div className="card h-100 shadow-sm">
-			{/* TODO (conectar con backend): reemplazar por course.image_url cuando exista */}
-			<div className="bg-dark" style={{ height: "160px" }}></div>
+			{course.image_url ? (
+				<img
+					src={course.image_url}
+					alt={course.title}
+					className="card-img-top"
+					style={{ height: "160px", objectFit: "cover" }}
+				/>
+			) : (
+				<div className="bg-dark" style={{ height: "160px" }}></div>
+			)}
 
 			<div className="card-body d-flex flex-column">
 				<div className="d-flex justify-content-between align-items-center mb-2">
 					<span className={`badge ${badgeClass}`}>{course.level}</span>
-					<small className="text-muted">
-						<i className="fa-regular fa-clock me-1"></i>
-						{course.duration_hours}h
-					</small>
+					{course.duration_hours && (
+						<small className="text-muted">
+							<i className="fa-regular fa-clock me-1"></i>
+							{course.duration_hours}
+						</small>
+					)}
 				</div>
 
 				<h5 className="card-title">{course.title}</h5>
@@ -31,11 +41,11 @@ export const CourseCard = ({ course }) => {
 				</p>
 
 				<div className="d-flex justify-content-between align-items-center mt-3">
-					<span className="badge bg-light text-dark border">{course.tag}</span>
-					{/* TODO (conectar con nuestro líder Luis ): hay que confirmar que esta ruta coincida
-					    con la que Luis registre para la página de detalle del curso. */}
+					<small className="text-muted">
+						{course.modules_count} módulo{course.modules_count === 1 ? "" : "s"}
+					</small>
 					<Link
-						to={`/courses/${course.id}`}
+						to={`/course/${course.id}`}
 						className="btn btn-dark btn-sm"
 					>
 						Ver Temario

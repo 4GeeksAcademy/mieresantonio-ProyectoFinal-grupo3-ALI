@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const TopBar = () => {
     return (
@@ -41,12 +42,12 @@ export const Hero = () => {
                     y evaluaciones prácticas.
                 </p>
 
-                <button className="btn btn-primary btn-lg me-2">
+                <Link to="/register" className="btn btn-primary btn-lg me-2">
                     Empieza a aprender gratis
-                </button>
-                <button className="btn btn-outline-secondary btn-lg">
+                </Link>
+                <Link to="/courses" className="btn btn-outline-secondary btn-lg">
                     Ver plan de estudios
-                </button>
+                </Link>
             </div>
         </div>
     );
