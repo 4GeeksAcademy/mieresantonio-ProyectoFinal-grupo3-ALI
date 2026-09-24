@@ -437,7 +437,7 @@ def get_user_progress(user_id):
     if not progress:
         return jsonify([]), 200
 
-    return jsonify([{"lesson_id": p.lesson_id, "lesson_title": p.lesson.title, "is_completed": p.is_completed, "quiz_score": p.quiz_score} for p in progress]), 200
+    return jsonify([{"lesson_id": p.lesson_id, "lesson_title": p.lesson.title, "path_id": p.lesson.module.learning_path_id, "is_completed": p.is_completed, "quiz_score": p.quiz_score} for p in progress]), 200
 
 
 @api.route('/progress/<int:user_id>/<int:lesson_id>', methods=['GET'])

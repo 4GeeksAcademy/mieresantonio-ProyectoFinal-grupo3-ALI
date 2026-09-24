@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { getCourses } from "../services/coursesService";
 import { CourseFilterBar } from "../components/CourseFilterBar";
 import { CourseCard } from "../components/CourseCard";
@@ -46,19 +46,19 @@ export const Courses = () => {
                     </p>
                 </div>
                 {localStorage.getItem("token") ? "" : <div className="col-md-4">
-                    <div className="border rounded p-3">
+                    <div className="card border-0 shadow-sm p-3">
                         <h6 className="fw-bold">
-                            <i className="fa-regular fa-user me-2"></i>
+                            <i className="fa-regular fa-user me-2 text-primary"></i>
                             Modo Explorador
                         </h6>
                         <p className="text-muted small">
                             Puedes consultar los temarios pero tienes que iniciar sesión para acceder a las
                             lecciones y guardar tu progreso.
                         </p>
-                        <button className="btn btn-dark w-100">Registrarme Gratis</button>
+                        <Link to="/register" className="btn btn-primary w-100 rounded-pill">Registrarme Gratis</Link>
                     </div>
                 </div>}
-                
+
             </div>
 
             {/* Buscador y filtros por nivel */}

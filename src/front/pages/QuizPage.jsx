@@ -20,6 +20,7 @@ export const QuizPage = () => {
 
     const setScore = async () => {
         if (!currentUser) return;
+        setError("");
 
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/progress/${currentUser.id}/${params.lessonId}`, {
@@ -63,45 +64,48 @@ export const QuizPage = () => {
     if (!quiz) {
         return (
             <div className="container py-5 text-center">
-                <div className="spinner-border" role="status"></div>
+                <div className="spinner-border text-primary" role="status"></div>
             </div>
         );
     }
 
     return (
         <div className="container py-4">
-            <div className="card border mb-4">
-                <div className="card-body">
-                    <span className="badge bg-dark mb-2">EVALUACIÓN</span>
+            {error && <div className="alert alert-danger py-2">{error}</div>}
+            <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body p-4">
+                    <span className="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-2">
+                        EVALUACIÓN
+                    </span>
                     <h3 className="fw-bold">{quiz.title}</h3>
                     {currentUser?.role === "student" ?
-                        <p className="text-secondary mb-0">{quiz.description}</p> : ""}
+                        <p className="text-muted mb-0">{quiz.description}</p> : ""}
                 </div>
             </div>
             {quiz.questions_data.map((pregunta, index) => (
-                <div className="card border mb-3" key={index}>
-                    <div className="card-body">
+                <div className="card border-0 shadow-sm mb-3" key={index}>
+                    <div className="card-body p-4">
                         <div className="d-flex justify-content-between align-items-center mb-3">
-                            <span className="badge bg-light text-dark border">
+                            <span className="badge bg-light text-dark border rounded-pill">
                                 Pregunta {index + 1} de {quiz.questions_data.length}
                             </span>
                             {currentUser?.role === "student" ?
-                                <span className="small text-secondary">Selecciona una respuesta</span> : ""}
+                                <span className="small text-muted">Selecciona una respuesta</span> : ""}
                         </div>
                         <h5 className="fw-bold mb-3">{pregunta.question_text}</h5>
 
                         {["a", "b", "c"].map((letra) => (
                             <div
                                 key={letra}
-                                className={`border rounded p-3 mb-2
-                                        ${respuestas[index] === letra ? "border-dark bg-light" : ""}
+                                className={`border rounded-3 p-3 mb-2
+                                        ${respuestas[index] === letra ? "border-primary bg-primary-subtle" : ""}
                                         ${letra === pregunta.correct_option &&
                                         currentUser?.role === "admin" ?
-                                        "bg bg-primary" : ""}`}
+                                        "bg-success-subtle border-success" : ""}`}
                                 style={{ cursor: "pointer" }}
                                 onClick={() => { if (!enviado) setRespuestas({ ...respuestas, [index]: letra }) }}
                             >
-                                <span className="badge bg-light text-dark border me-2">
+                                <span className="badge bg-white text-dark border me-2">
                                     {letra.toUpperCase()}
                                 </span>
                                 {pregunta["option_" + letra]}
@@ -113,25 +117,25 @@ export const QuizPage = () => {
             ))}
             {currentUser?.role !== "student" ? "" : !enviado ? (
                 <button
-                    className="btn btn-dark rounded-pill px-4"
+                    className="btn btn-primary rounded-pill px-4"
                     onClick={() => setScore()}
                     disabled={Object.keys(respuestas).length < quiz.questions_data.length}
                 >
                     Enviar respuestas
                 </button>
             ) : (
-                <div className="card border">
-                    <div className="card-body text-center">
+                <div className="card border-0 shadow-sm">
+                    <div className="card-body text-center p-4">
                         <h4 className="fw-bold">
                             {calcularNota()} de {quiz.questions_data.length} correctas
                         </h4>
-                        <p className="text-secondary mb-0">
+                        <p className="text-muted mb-0">
                             {calcularNota() / quiz.questions_data.length >= 0.7
                                 ? "Aprobaste la evaluación."
                                 : "Necesitas 70% para aprobar. Puedes intentarlo de nuevo."}
                         </p>
                         <button
-                            className="btn btn-outline-dark rounded-pill px-4 mt-3"
+                            className="btn btn-outline-primary rounded-pill px-4 mt-3"
                             onClick={() => {
                                 setRespuestas({});
                                 setEnviado(false);

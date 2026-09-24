@@ -57,7 +57,7 @@ export const Navbar = () => {
 	const suggestions = [...matchingStatic, ...matchingCourses];
 
 	return (
-		<nav className="navbar navbar-light bg-light">
+		<nav className="navbar navbar-light bg-white shadow-sm sticky-top py-3">
 			<div className="container d-flex align-items-center justify-content-between">
 				<Link to="/">
 					<Logo size={32} />
@@ -69,7 +69,7 @@ export const Navbar = () => {
 				>
 					<input
 						type="text"
-						className="form-control"
+						className="form-control rounded-pill"
 						style={{ maxWidth: "400px" }}
 						placeholder="¿Qué quieres aprender hoy?"
 						value={searchText}
@@ -99,34 +99,25 @@ export const Navbar = () => {
 				</form>
 
 				<div className="d-flex align-items-center gap-2">
-					<Link to="/courses" className="btn btn-outline-dark">
+					<Link to="/courses" className="btn btn-outline-primary rounded-pill">
 						Explorar Rutas
 					</Link>
 
 					{store.token ? (
 						<>
-							<span className="position-relative me-1">
-								<i className="fa-regular fa-bell fs-5"></i>
-								<span
-									className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-									style={{ width: "8px", height: "8px" }}
-								>
-									<span className="visually-hidden">Notificaciones nuevas</span>
-								</span>
-							</span>
-							<Link to="/dashboard" className="btn btn-outline-primary">
+							<Link to="/dashboard" className="btn btn-outline-primary rounded-pill">
 								Mis Cursos
 							</Link>
-							<button className="btn btn-outline-danger" onClick={handleLogout}>
+							<button className="btn btn-outline-danger rounded-pill" onClick={handleLogout}>
 								Cerrar Sesión
 							</button>
 						</>
 					) : (
 						<>
-							<Link to="/register" className="btn btn-outline-primary">
+							<Link to="/register" className="btn btn-outline-primary rounded-pill">
 								Registrarse
 							</Link>
-							<Link to="/login" className="btn btn-primary">
+							<Link to="/login" className="btn btn-primary rounded-pill">
 								Iniciar Sesión
 							</Link>
 						</>

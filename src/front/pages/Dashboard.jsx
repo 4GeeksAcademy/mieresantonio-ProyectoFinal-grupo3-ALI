@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Dashboard = () => {
@@ -33,7 +33,8 @@ export const Dashboard = () => {
                 const dashboardData = await dashboardResp.json();
                 dispatch({ type: "set_user", payload: dashboardData.user });
 
-                // 2. Trae el progreso de lecciones de ese usuario.
+                // 2. Trae el progreso de lecciones de ese usuario (incluye
+                //    lesson_title y path_id para poder armar el link directo).
                 const progressResp = await fetch(
                     `${import.meta.env.VITE_BACKEND_URL}/api/progress/${dashboardData.user.id}`,
                     { headers: { Authorization: `Bearer ${store.token}` } }
@@ -52,7 +53,14 @@ export const Dashboard = () => {
     }, [store.token]);
 
     if (loading) {
-        return <div className="container py-5 text-center text-muted">Cargando tu progreso...</div>;
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+                <p className="text-muted small mt-3 mb-0">Cargando tu progreso...</p>
+            </div>
+        );
     }
 
     if (error) {
@@ -67,6 +75,13 @@ export const Dashboard = () => {
     const total = progress.length;
     const porcentaje = total > 0 ? Math.round((completadas / total) * 100) : 0;
 
+    // Solo contamos como "aprobado" un quiz con nota >= 70%, igual que el
+    // criterio real que ya usa QuizPage.jsx para marcar aprobación.
+    const quizzesAprobados = progress.filter((p) => p.quiz_score !== null && p.quiz_score >= 70).length;
+
+    // Primera lección sin completar: la que usamos para "Continuar aprendiendo".
+    const siguienteLeccion = progress.find((p) => !p.is_completed);
+
     if (!usuario || usuario.role !== "student") {
         return (
             <div className="container py-5 text-center">
@@ -80,54 +95,87 @@ export const Dashboard = () => {
 
     return (
         <div className="container py-4">
-            <h2 className="fw-bold mb-1">Panel del Estudiante</h2>
-            <p className="text-secondary mb-4">
+            <span className="badge bg-primary-subtle text-primary-emphasis mb-2" data-aos="fade-up">
+                Panel del Estudiante
+            </span>
+            <h2 className="fw-bold mb-1" data-aos="fade-up">
                 Bienvenido{store.user?.username ? `, ${store.user.username}` : ""}
+            </h2>
+            <p className="text-muted mb-4" data-aos="fade-up">
+                Sigue avanzando en tu ruta de aprendizaje blockchain.
             </p>
 
-            <div className="card border mb-4">
-                <div className="card-body">
-                    <h5 className="fw-bold">Tu progreso general</h5>
-                    <p className="text-muted mb-2">
-                        {porcentaje}% completado ({completadas}/{total} lecciones)
-                    </p>
-                    <div className="progress" role="progressbar" style={{ height: "10px" }}>
-                        <div
-                            className="progress-bar bg-success"
-                            style={{ width: `${porcentaje}%` }}
-                        ></div>
+            {total > 0 && (
+                <div className="row g-3 mb-4">
+                    <div className="col-6 col-md-3">
+                        <div className="card border-0 shadow-sm h-100 p-3 text-center" data-aos="fade-up">
+                            <div className="fs-3 fw-bold text-primary">{porcentaje}%</div>
+                            <div className="text-muted small">Completado</div>
+                        </div>
+                    </div>
+                    <div className="col-6 col-md-3">
+                        <div className="card border-0 shadow-sm h-100 p-3 text-center" data-aos="fade-up" data-aos-delay="50">
+                            <div className="fs-3 fw-bold text-primary">{completadas}</div>
+                            <div className="text-muted small">Lecciones hechas</div>
+                        </div>
+                    </div>
+                    <div className="col-6 col-md-3">
+                        <div className="card border-0 shadow-sm h-100 p-3 text-center" data-aos="fade-up" data-aos-delay="100">
+                            <div className="fs-3 fw-bold text-primary">{quizzesAprobados}</div>
+                            <div className="text-muted small">Quizzes aprobados</div>
+                        </div>
+                    </div>
+                    <div className="col-6 col-md-3">
+                        <div className="card border-0 shadow-sm h-100 p-3 text-center" data-aos="fade-up" data-aos-delay="150">
+                            <div className="fs-3 fw-bold text-primary">{total}</div>
+                            <div className="text-muted small">Lecciones vistas</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            <div className="card border">
-                <div className="card-header bg-white">
-                    <h5 className="fw-bold mb-0">Lecciones</h5>
+            {siguienteLeccion && (
+                <div className="card border-0 shadow-sm mb-4 bg-primary text-white" data-aos="fade-up">
+                    <div className="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <span className="badge bg-white text-primary mb-2">Continuar aprendiendo</span>
+                            <h5 className="fw-bold mb-0">{siguienteLeccion.lesson_title}</h5>
+                        </div>
+                        <Link
+                            to={`/lesson/${siguienteLeccion.path_id}/${siguienteLeccion.lesson_id}`}
+                            className="btn btn-light rounded-pill px-4 fw-semibold"
+                        >
+                            Continuar <i className="fa-solid fa-arrow-right ms-1"></i>
+                        </Link>
+                    </div>
                 </div>
-                <div className="card-body">
+            )}
+
+            <div className="card border-0 shadow-sm" data-aos="fade-up">
+                <div className="card-body p-4">
+                    <h5 className="fw-bold mb-3">Lecciones</h5>
                     {total === 0 && (
-                        <p className="text-muted mb-0">
-                            Todavía no has empezado ninguna lección.{" "}
-                            {/* TODO: cuando exista un botón "Ingresar a esta ruta" que llame a
-                                POST /api/progress, aquí empezarán a aparecer filas. */}
+                        <p className="text-muted small mb-0">
+                            Todavía no has empezado ninguna lección. Entra a "Explorar Rutas" para comenzar.
                         </p>
                     )}
                     {progress.map((item, i) => (
-                        <div
+                        <Link
                             key={i}
-                            className="d-flex justify-content-between align-items-center border-bottom py-2"
+                            to={`/lesson/${item.path_id}/${item.lesson_id}`}
+                            className="d-flex justify-content-between align-items-center border-bottom py-3 text-decoration-none text-dark"
                         >
-                            {/* TODO: el backend hoy solo da lesson_id, no el título de la
-                                lección — pedirle a nuestro lider Luis o al equipo que /api/progress incluya
-                                lesson_title para mostrar algo más claro que un número. */}
-                            <span>Lección: {item.lesson_title}</span>
-                            <span className={`badge ${item.is_completed ? "bg-success" : "bg-secondary"}`}>
+                            <span>
+                                <i className="fa-regular fa-file-lines text-primary me-2"></i>
+                                {item.lesson_title || `Lección #${item.lesson_id}`}
+                            </span>
+                            <span className={`badge rounded-pill ${item.is_completed ? "bg-success" : "bg-secondary"}`}>
                                 {item.is_completed ? "Completada" : "En progreso"}
                             </span>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
         </div>
     );
-};
+}; 

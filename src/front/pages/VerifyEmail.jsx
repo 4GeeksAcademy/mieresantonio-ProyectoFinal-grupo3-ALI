@@ -53,52 +53,52 @@ export const VerifyEmail = () => {
     }, [token]);
 
     return (
-        <div className="container mt-5">
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-8 col-lg-5">
-                    <div className="card shadow-sm border-0 text-center">
-                        <div className="card-body p-5">
-                            {loading ? (
-                                <div>
-                                    <div
-                                        className="spinner-border text-primary mb-3"
-                                        role="status"
-                                        style={{ width: "3rem", height: "3rem" }}
-                                    >
-                                        <span className="visually-hidden">Verificando ...</span>
-                                    </div>
-                                    <h4 className="card-title">Verificando tu cuenta ...</h4>
-                                    <p className="text-muted">Por favor espera un momento.</p>
-                                </div>
+        <div className="container py-5 d-flex justify-content-center">
+            <div className="card border-0 shadow-sm text-center" style={{ maxWidth: "420px", width: "100%" }}>
+                <div className="card-body p-4 p-md-5">
+                    {loading ? (
+                        <div>
+                            <div
+                                className="spinner-border text-primary mb-3"
+                                role="status"
+                                style={{ width: "3rem", height: "3rem" }}
+                            >
+                                <span className="visually-hidden">Verificando ...</span>
+                            </div>
+                            <h4 className="fw-bold">Verificando tu cuenta ...</h4>
+                            <p className="text-muted small mb-0">Por favor espera un momento.</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="d-flex justify-content-center mb-3">
+                                {status.success ? (
+                                    <CheckCircle2 size={64} className="text-success" />
+                                ) : (
+                                    <XCircle size={64} className="text-danger" />
+                                )}
+                            </div>
+
+                            <span className="badge bg-primary-subtle text-primary-emphasis mb-2">
+                                {status.success ? "Verificación completa" : "Algo salió mal"}
+                            </span>
+
+                            <h4 className="fw-bold mb-3">
+                                {status.success ? "Verificación Exitosa" : "Verificación Fallida"}
+                            </h4>
+
+                            <p className="text-muted small mb-4">{status.message}</p>
+
+                            {status.success ? (
+                                <Link to="/login" className="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                                    Ir a Iniciar Sesión <ArrowRight size={18} className="ms-1" />
+                                </Link>
                             ) : (
-                                <div>
-                                    <div className="d-flex justify-content-center mb-3">
-                                        {status.success ? (
-                                            <CheckCircle2 size={64} className="text-success" />
-                                        ) : (
-                                            <XCircle size={64} className="text-danger" />
-                                        )}
-                                    </div>
-
-                                    <h4 className="card-title mb-3">
-                                        {status.success ? "Verificación Exitosa" : "Verificación Fallida"}
-                                    </h4>
-
-                                    <p className="text-muted mb-4">{status.message}</p>
-
-                                    {status.success ? (
-                                        <Link to="/login" className="btn btn-primary w-100">
-                                            Ir a Iniciar Sesión <ArrowRight size={18} className="ms-1" />
-                                        </Link>
-                                    ) : (
-                                        <Link to="/register" className="btn btn-outline-primary w-100">
-                                            <RotateCcw size={18} className="me-1" /> Volver a Registrarme
-                                        </Link>
-                                    )}
-                                </div>
+                                <Link to="/register" className="btn btn-outline-primary w-100 rounded-pill py-2 fw-semibold">
+                                    <RotateCcw size={18} className="me-1" /> Volver a Registrarme
+                                </Link>
                             )}
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

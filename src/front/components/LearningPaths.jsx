@@ -21,11 +21,14 @@ const LearningPaths = () => {
         getLearningPaths();
     }, [])
 
-    return <div className="container">
-        <div className="row text-start">
-            <h3>Rutas de Aprendizaje</h3>
+    return <div className="container py-5">
+        <div className="row text-center mb-4">
+            <span className="badge bg-primary-subtle text-primary-emphasis mb-2 mx-auto" style={{ width: "fit-content" }}>
+                CATÁLOGO EDUCATIVO WEB3
+            </span>
+            <h3 className="fw-bold">Rutas de Aprendizaje</h3>
         </div>
-        <div className="row pb-5">
+        <div className="row g-4 pb-5">
             {store.learningPaths?.map((value, index) => {
                 return <div key={value.id} className="col-md-4 col-xs-8">
                     <LearningPathCard data={value} />
@@ -33,8 +36,8 @@ const LearningPaths = () => {
             })}
         </div>
         <div className="row">
-            <div className="col-12 text-center pb-5">
-                <Link to="/courses" className="btn btn-outline-dark rounded-pill px-4">
+            <div className="col-12 text-center pb-2">
+                <Link to="/courses" className="btn btn-outline-primary rounded-pill px-4">
                     Ver todas las rutas
                 </Link>
             </div>

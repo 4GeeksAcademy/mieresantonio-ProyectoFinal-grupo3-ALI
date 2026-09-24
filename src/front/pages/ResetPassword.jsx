@@ -56,53 +56,69 @@ export const ResetPassword = () => {
     };
 
     return (
-        <div className="container mt-5 d-flex justify-content-center">
-            <div className="card p-5 shadow-sm w-100" style={{ maxWidth: "400px" }}>
-                <h3 className="text-center mb-2">Restablecer Contraseña</h3>
-                <p className="text-muted text-center mb-4">
-                    Ingresa tu nueva contraseña para acceder a tu cuenta.
-                </p>
+        <div className="container py-5 d-flex justify-content-center">
+            <div className="card border-0 shadow-sm" style={{ maxWidth: "420px", width: "100%" }}>
+                <div className="card-body p-4 p-md-5">
+                    <div className="text-center mb-4">
+                        <span className="badge bg-primary-subtle text-primary-emphasis mb-3">
+                            Último paso
+                        </span>
+                        <h3 className="fw-bold mb-1">Restablecer Contraseña</h3>
+                        <p className="text-muted small mb-0">
+                            Ingresa tu nueva contraseña para acceder a tu cuenta.
+                        </p>
+                    </div>
 
-                {error && <div className="alert alert-danger py-2">{error}</div>}
-                {success && <div className="alert alert-success py-2">{success}</div>}
+                    {error && <div className="alert alert-danger py-2">{error}</div>}
+                    {success && <div className="alert alert-success py-2">{success}</div>}
 
-                {success ? (
-                    <button className="btn btn-primary w-100" onClick={() => navigate("/login")}>
-                        Ir al Inicio de Sesión →
-                    </button>
-                ) : (
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label className="form-label">Nueva Contraseña</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                placeholder="Mínimo 6 caracteres"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Confirmar Nueva Contraseña</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                placeholder="Repite la nueva contraseña"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-                            {loading ? "Guardando..." : "Guardar Contraseña"}
+                    {success ? (
+                        <button
+                            className="btn btn-primary w-100 rounded-pill py-2 fw-semibold"
+                            onClick={() => navigate("/login")}
+                        >
+                            Ir al Inicio de Sesión →
                         </button>
-                    </form>
-                )}
+                    ) : (
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">Nueva Contraseña</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    placeholder="Mínimo 6 caracteres"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="form-label fw-semibold">Confirmar Nueva Contraseña</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    placeholder="Repite la nueva contraseña"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="btn btn-primary w-100 rounded-pill py-2 fw-semibold"
+                                disabled={loading}
+                            >
+                                {loading ? "Guardando..." : "Guardar Contraseña"}
+                            </button>
+                        </form>
+                    )}
 
-                <p className="text-center mt-3 mb-0">
-                    <Link to="/login">← Volver al Inicio de Sesión</Link>
-                </p>
+                    <p className="text-center text-muted small mt-4 mb-0">
+                        <Link to="/login" className="text-primary fw-semibold">
+                            ← Volver al Inicio de Sesión
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );

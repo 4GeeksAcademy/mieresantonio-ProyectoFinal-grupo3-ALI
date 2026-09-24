@@ -25,8 +25,9 @@ export const Features = () => {
     return (
         <section className="py-5">
             <div className="container">
-                <div className="text-center mb-5">
-                    <h2 className="fw-bold">¿Por qué elegir Blockali?</h2>
+                <div className="text-center mb-5" data-aos="fade-up">
+                    <span className="badge bg-primary-subtle mb-2">POR QUÉ BLOCKALI</span>
+                    <h2 className="fw-bold gradient-heading">¿Por qué elegir Blockali?</h2>
                     <p className="text-secondary mx-auto" style={{ maxWidth: "600px" }}>
                         Un enfoque pedagógico diseñado para desarrolladores y profesionales
                         que valoran su tiempo y buscan profundidad técnica.
@@ -35,10 +36,10 @@ export const Features = () => {
 
                 <div className="row g-4">
                     {features.map((f, index) => (
-                        <div className="col-12 col-md-4" key={index}>
+                        <div className="col-12 col-md-4" key={index} data-aos="fade-up" data-aos-delay={index * 100}>
                             <div
-                                className={`card border-0 h-100 p-4 ${f.dark ? "text-white" : ""}`}
-                                style={f.dark ? { backgroundColor: "#111827" } : { backgroundColor: "#e9ecef" }}
+                                className={`card border-0 shadow-sm h-100 p-4 ${f.dark ? "text-white" : ""}`}
+                                style={f.dark ? { backgroundColor: "#111827" } : { backgroundColor: "#eef1f8" }}
                             >
                                 <div
                                     className={`d-flex align-items-center justify-content-center rounded-3 mb-4 ${f.dark ? "bg-white bg-opacity-10" : "bg-primary bg-opacity-25"

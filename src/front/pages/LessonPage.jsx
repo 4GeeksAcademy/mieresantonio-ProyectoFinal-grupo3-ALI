@@ -66,6 +66,7 @@ const LessonPage = () => {
     const handleLessonDone = async () => {
 
         if (!currentUser) return;
+        setError("");
 
         if (!userProgress.is_completed) {
             try {
@@ -117,15 +118,18 @@ const LessonPage = () => {
     if (!lesson) {
         return (
             <div className="container py-5 text-center">
-                <div className="spinner-border" role="status"></div>
+                <div className="spinner-border text-primary" role="status"></div>
             </div>
         );
     }
 
     return <div className="container mt-4">
-        <div className="d-flex">
+        {error && <div className="alert alert-danger py-2">{error}</div>}
+        <div className="d-flex align-items-center">
             <div>
-                <p className="badge bg-info-subtle text-info-emphasis border me-2">Lección {lesson?.order_number}</p>
+                <span className="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2">
+                    Lección {lesson?.order_number}
+                </span>
             </div>
             {currentUser?.role === "student" ?
                 <div className="ms-auto">
@@ -139,20 +143,24 @@ const LessonPage = () => {
                     </button>
                 </div> : ""}
         </div>
-        <div className="markdown-body">
-            <Markdown remarkPlugins={[remarkGfm]}>{lesson?.content}</Markdown>
+        <div className="card border-0 shadow-sm mt-3">
+            <div className="card-body p-4 p-md-5">
+                <div className="markdown-body">
+                    <Markdown remarkPlugins={[remarkGfm]}>{lesson?.content}</Markdown>
+                </div>
+            </div>
         </div>
-        <div className="d-flex justify-content-between pt-4">
-            {lesson.order_number === 1 ? <Link to={`/course/${params.pathId}`} className="btn btn-outline-secondary rounded-5">
+        <div className="d-flex justify-content-between pt-4 pb-2">
+            {lesson.order_number === 1 ? <Link to={`/course/${params.pathId}`} className="btn btn-outline-secondary rounded-pill">
                 <i className="fa-solid fa-arrow-left-long"></i> Volver al Curso
-            </Link> : <Link to={`/lesson/${params.pathId}/${previousLessonId()}`} className="btn btn-outline-secondary rounded-5">
+            </Link> : <Link to={`/lesson/${params.pathId}/${previousLessonId()}`} className="btn btn-outline-secondary rounded-pill">
                 <i className="fa-solid fa-arrow-left-long"></i> Anterior
             </Link>}
             {nextLessonId() !== "quiz" ?
-                <Link to={`/lesson/${params.pathId}/${nextLessonId()}`} className="btn btn-dark rounded-5">
+                <Link to={`/lesson/${params.pathId}/${nextLessonId()}`} className="btn btn-primary rounded-pill px-4">
                     Siguiente <i className="fa-solid fa-arrow-right"></i>
                 </Link>
-                : <Link to={`/quizzes/${lesson.module_lessons[0].id}`} className="btn btn-dark rounded-5">
+                : <Link to={`/quizzes/${lesson.module_lessons[0].id}`} className="btn btn-primary rounded-pill px-4">
                     Ir al Quiz <i className="fa-solid fa-arrow-right"></i>
                 </Link>}
         </div>

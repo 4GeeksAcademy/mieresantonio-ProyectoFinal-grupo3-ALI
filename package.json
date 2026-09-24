@@ -54,6 +54,7 @@
 		]
 	},
 	"dependencies": {
+		"aos": "^2.3.4",
 		"bootstrap-icons": "^1.13.1",
 		"lucide-react": "^1.42.0",
 		"prop-types": "^15.8.1",

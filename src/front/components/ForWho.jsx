@@ -29,8 +29,8 @@ export const ForWho = () => {
                 <div className="row g-4">
                     {perfiles.map((perfil, i) => (
                         <div className="col-12 col-md-4" key={i}>
-                            <div className="card border h-100 p-4">
-                                <i className={`bi ${perfil.icon} fs-3 mb-3`}></i>
+                            <div className="card border-0 shadow-sm h-100 p-4">
+                                <i className={`bi ${perfil.icon} fs-3 mb-3 text-primary`}></i>
                                 <h6 className="fw-bold mb-2">{perfil.titulo}</h6>
                                 <p className="text-secondary small mb-0">{perfil.texto}</p>
                             </div>

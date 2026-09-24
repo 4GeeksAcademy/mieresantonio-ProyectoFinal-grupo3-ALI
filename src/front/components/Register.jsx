@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Register = () => {
     const [username, setUsername] = useState("");
@@ -47,60 +47,75 @@ export const Register = () => {
     };
 
     return (
-        <div className="container" style={{ maxWidth: "480px" }}>
-            <h2 className="text-center mb-4">Crear Cuenta</h2>
+        <div className="container py-5 d-flex justify-content-center">
+            <div className="card border-0 shadow-sm" style={{ maxWidth: "460px", width: "100%" }}>
+                <div className="card-body p-4 p-md-5">
+                    <div className="text-center mb-4">
+                        <span className="badge bg-primary-subtle text-primary-emphasis mb-3">
+                            Empieza gratis
+                        </span>
+                        <h3 className="fw-bold mb-1">Crear Cuenta</h3>
+                        <p className="text-muted small mb-0">
+                            Únete y arranca tu primera ruta de blockchain hoy.
+                        </p>
+                    </div>
 
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
+                    {error && <div className="alert alert-danger py-2">{error}</div>}
+                    {success && <div className="alert alert-success py-2">{success}</div>}
 
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Nombre de Usuario</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Nombre de Usuario</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Tu nombre"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Correo Electrónico</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                placeholder="ejemplo@correo.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="form-label fw-semibold">Contraseña</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                placeholder="Mínimo 6 caracteres"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="btn btn-primary w-100 rounded-pill py-2 fw-semibold"
+                            disabled={loading}
+                        >
+                            {loading ? "Registrando..." : "Registrarse"}
+                        </button>
+                    </form>
+
+                    <p className="text-center text-muted small mt-4 mb-0">
+                        ¿Ya tienes una cuenta?{" "}
+                        <Link to="/login" className="text-primary fw-semibold">
+                            Inicia Sesión
+                        </Link>
+                    </p>
                 </div>
-
-                <div className="mb-3">
-                    <label className="form-label">Correo Electrónico</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className="mb-3">
-                    <label className="form-label">Contraseña</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <button type="submit" className="btn btn-success w-100" disabled={loading}>
-                    {loading ? "Registrando..." : "Registrarse"}
-                </button>
-            </form>
-
-            <p className="text-center mt-3">
-                ¿Ya tienes una cuenta?{" "}
-                <span
-                    role="button"
-                    className="text-primary"
-                    onClick={() => navigate("/login")}
-                >
-                    Inicia Sesión
-                </span>
-            </p>
+            </div>
         </div>
     );
 };

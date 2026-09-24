@@ -46,7 +46,7 @@ export const CourseCard = ({ course }) => {
 					</small>
 					<Link
 						to={`/course/${course.id}`}
-						className="btn btn-dark btn-sm"
+						className="btn btn-primary btn-sm rounded-pill px-3"
 					>
 						Ver Temario
 					</Link>

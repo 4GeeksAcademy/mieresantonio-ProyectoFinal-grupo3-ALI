@@ -15,13 +15,6 @@ export const Admin = () => {
     const [tituloModulo, setTituloModulo] = useState("");
     const [nivelModulo, setNivelModulo] = useState("Principiante");
 
-    const stats = {
-        rutas: 4,
-        modulos: 6,
-        lecciones: 8,
-        usuarios: 2
-    };
-
     useEffect(() => {
         const userGuardado = localStorage.getItem("user");
         if (userGuardado) {
@@ -121,11 +114,18 @@ export const Admin = () => {
 
     if (!usuario || usuario.role !== "admin") {
         return (
-            <div className="container py-5 text-center">
-                <h3 className="fw-bold">Acceso restringido</h3>
-                <p className="text-secondary">
-                    Esta sección es solo para administradores.
-                </p>
+            <div className="container py-5 d-flex justify-content-center">
+                <div className="card border-0 shadow-sm text-center" style={{ maxWidth: "420px", width: "100%" }}>
+                    <div className="card-body p-4 p-md-5">
+                        <span className="badge bg-danger-subtle text-danger-emphasis mb-3">
+                            Acceso restringido
+                        </span>
+                        <h3 className="fw-bold mb-2">Esta sección es solo para administradores</h3>
+                        <p className="text-muted small mb-0">
+                            Si crees que deberías tener acceso, contacta al equipo de Blockali.
+                        </p>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -134,7 +134,7 @@ export const Admin = () => {
         <div className="container py-4">
             <div className="d-flex align-items-center gap-2 mb-1">
                 <h2 className="fw-bold mb-0">Panel de Administración</h2>
-                <span className="badge bg-danger rounded-pill">ADMIN</span>
+                <span className="badge bg-primary rounded-pill">ADMIN</span>
             </div>
             <p className="text-secondary small">
                 Administra rutas, módulos y lecciones de la plataforma.
@@ -142,36 +142,36 @@ export const Admin = () => {
 
             <div className="row g-3 mb-4">
                 <div className="col-6 col-lg-3">
-                    <div className="card border p-3">
+                    <div className="card border-0 shadow-sm p-3 border-start border-4 border-primary">
                         <div className="text-secondary small text-uppercase">Rutas</div>
-                        <div className="fs-4 fw-bold">{rutas.length}</div>
+                        <div className="fs-3 fw-bold">{rutas.length}</div>
                     </div>
                 </div>
                 <div className="col-6 col-lg-3">
-                    <div className="card border p-3">
+                    <div className="card border-0 shadow-sm p-3 border-start border-4 border-info">
                         <div className="text-secondary small text-uppercase">Módulos</div>
-                        <div className="fs-4 fw-bold">{modulos.length}</div>
+                        <div className="fs-3 fw-bold">{modulos.length}</div>
                     </div>
                 </div>
                 <div className="col-6 col-lg-3">
-                    <div className="card border p-3">
+                    <div className="card border-0 shadow-sm p-3 border-start border-4 border-success">
                         <div className="text-secondary small text-uppercase">Lecciones</div>
-                        <div className="fs-4 fw-bold">{modulos.reduce((total, modulo) => total + modulo.lessons?.length, 0)}</div>
+                        <div className="fs-3 fw-bold">{modulos.reduce((total, modulo) => total + modulo.lessons?.length, 0)}</div>
                     </div>
                 </div>
                 <div className="col-6 col-lg-3">
-                    <div className="card border p-3">
+                    <div className="card border-0 shadow-sm p-3 border-start border-4 border-warning">
                         <div className="text-secondary small text-uppercase">Usuarios</div>
-                        <div className="fs-4 fw-bold">{listaDeUsuarios.length}</div>
+                        <div className="fs-3 fw-bold">{listaDeUsuarios.length}</div>
                     </div>
                 </div>
             </div>
 
-            <div className="card border">
+            <div className="card border-0 shadow-sm">
                 <div className="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 className="fw-bold mb-0">Rutas de aprendizaje</h5>
                     <button
-                        className="btn btn-dark btn-sm rounded-pill px-3"
+                        className="btn btn-primary btn-sm rounded-pill px-3"
                         onClick={() => setFormRutaAbierto(!formRutaAbierto)}
                     >
                         {formRutaAbierto ? "Cancelar" : "+ Nueva ruta"}
@@ -189,7 +189,7 @@ export const Admin = () => {
                                 onChange={(e) => setTituloRuta(e.target.value)}
                             />
                             <button
-                                className="btn btn-dark btn-sm rounded-pill px-3"
+                                className="btn btn-primary btn-sm rounded-pill px-3"
                                 onClick={guardarRuta}
                                 disabled={!tituloRuta}
                             >
@@ -243,7 +243,7 @@ export const Admin = () => {
                                         </select>
                                     </div>
                                     <button
-                                        className="btn btn-dark btn-sm rounded-pill px-3"
+                                        className="btn btn-primary btn-sm rounded-pill px-3"
                                         onClick={() => guardarModulo(ruta.id)}
                                         disabled={!tituloModulo}
                                     >
@@ -290,7 +290,7 @@ export const Admin = () => {
                                         ></textarea>
                                     </div>
                                     <button
-                                        className="btn btn-dark btn-sm rounded-pill px-3"
+                                        className="btn btn-primary btn-sm rounded-pill px-3"
                                         onClick={() => guardarLeccion(ruta.id)}
                                     >
                                         Guardar lección

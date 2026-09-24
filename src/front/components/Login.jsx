@@ -31,23 +31,12 @@ export const Login = () => {
                 throw new Error(data.error || "Correo o contraseña incorrectos");
             }
 
-            // Guarda el token y el usuario en el store global (store.js).
             dispatch({ type: "set_token", payload: data.token });
             dispatch({ type: "set_user", payload: data.user });
-
-            // También lo guardamos en localStorage para no perder la sesión
-            // si el usuario recarga la página.
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
 
-            if (data.user.role === "admin") {
-                navigate("/admin");
-            }
-
-            if (data.user.role === "student") {
-                getUserProgress(data.user.id);
-            }
-
+            navigate("/dashboard");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -55,121 +44,67 @@ export const Login = () => {
         }
     };
 
-    const getUserProgress = async (user_id) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/progress/${user_id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudo obtener el progreso del usuario");
-            }
-
-            const data = await response.json();
-
-            if (data.length === 0) {
-                getAllLessons(user_id);
-            }
-            else {
-                navigate("/dashboard");
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const getAllLessons = async (user_id) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/lessons`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-
-            if (!response.ok) {
-                throw new Error("No se pudo obtener información");
-            }
-
-            const data = await response.json();
-            const initialProgress = data.map((value, index) => ({
-                user_id: user_id,
-                lesson_id: value.id,
-                quiz_score: 0,
-                is_completed: false
-            }))
-            createProgress(initialProgress);
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const createProgress = async (initialProgress) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/progress`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(initialProgress)
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudo inicializar el progreso");
-            }
-
-            const data = await response.json();
-            navigate("/dashboard");
-
-        } catch (error) {
-            setError(error.message);
-        }
-    }
-
     return (
-        <div className="card p-4 pb-5 shadow-sm w-100 mb-5" style={{ maxWidth: "400px", margin: "0 auto" }}>
-            <h3 className="text-center mb-4">Iniciar Sesión</h3>
-
-            {error && <div className="alert alert-danger py-2">{error}</div>}
-
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Correo Electrónico</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        placeholder="estudiante@ejemplo.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <div className="d-flex justify-content-between">
-                        <label className="form-label">Contraseña</label>
-                        <Link to="/forgot-password" className="text-primary small">
-                            ¿Olvidaste tu contraseña?
-                        </Link>
+        <div className="container py-5 d-flex justify-content-center">
+            <div className="card border-0 shadow-sm" style={{ maxWidth: "420px", width: "100%" }}>
+                <div className="card-body p-4 p-md-5">
+                    <div className="text-center mb-4">
+                        <span className="badge bg-primary-subtle text-primary-emphasis mb-3">
+                            Bienvenido de nuevo
+                        </span>
+                        <h3 className="fw-bold mb-1">Iniciar Sesión</h3>
+                        <p className="text-muted small mb-0">
+                            Continúa tu ruta de aprendizaje en Blockali.
+                        </p>
                     </div>
-                    <input
-                        type="password"
-                        className="form-control"
-                        placeholder="********"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+
+                    {error && <div className="alert alert-danger py-2">{error}</div>}
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label className="form-label fw-semibold">Correo Electrónico</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                placeholder="estudiante@ejemplo.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <label className="form-label fw-semibold mb-0">Contraseña</label>
+                                <Link to="/forgot-password" className="text-primary small">
+                                    ¿Olvidaste tu contraseña?
+                                </Link>
+                            </div>
+                            <input
+                                type="password"
+                                className="form-control mt-1"
+                                placeholder="********"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="btn btn-primary w-100 rounded-pill py-2 fw-semibold"
+                            disabled={loading}
+                        >
+                            {loading ? "Entrando..." : "Entrar"}
+                        </button>
+                    </form>
+
+                    <p className="text-center text-muted small mt-4 mb-0">
+                        ¿No tienes una cuenta?{" "}
+                        <Link to="/register" className="text-primary fw-semibold">
+                            Regístrate aquí
+                        </Link>
+                    </p>
                 </div>
-                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-                    {loading ? "Entrando..." : "Entrar"}
-                </button>
-            </form>
+            </div>
         </div>
     );
 };

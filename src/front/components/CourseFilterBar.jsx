@@ -14,7 +14,7 @@ export const CourseFilterBar = ({
                 type="text"
                 className="form-control"
                 style={{ maxWidth: "350px" }}
-                placeholder="Buscar por título, Solidity, DeFi..."
+                placeholder="Buscar por tÃ­tulo, Solidity, DeFi..."
                 value={searchText}
                 onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -24,7 +24,7 @@ export const CourseFilterBar = ({
                     <button
                         key={level}
                         type="button"
-                        className={`btn btn-sm ${activeLevel === level ? "btn-dark" : "btn-outline-secondary"
+                        className={`btn btn-sm rounded-pill ${activeLevel === level ? "btn-primary" : "btn-outline-secondary"
                             }`}
                         onClick={() => onLevelChange(level)}
                     >

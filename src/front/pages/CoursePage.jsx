@@ -67,7 +67,9 @@ const CoursePage = () => {
     }
 
     const progressPath = () => {
-        return lessonsDoneOfPath() * 100 / totalLessonsOfPath();
+        const total = totalLessonsOfPath();
+        if (!total) return 0;
+        return Math.round(lessonsDoneOfPath() * 100 / total);
     }
 
     useEffect(() => {
@@ -87,9 +89,11 @@ const CoursePage = () => {
         <CourseDescription data={learningPath} userType={verifyUser()} />
         <div className="row my-3">
             <div className="col">
-                <div className="d-flex justify-content-between">
-                    <h3>Módulos</h3>
-                    <p>{learningPath?.number_of_modules} {learningPath?.number_of_modules === 1 ? "módulo" : "módulos"}</p>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h3 className="fw-bold mb-0">Módulos</h3>
+                    <span className="badge bg-primary-subtle text-primary-emphasis">
+                        {learningPath?.number_of_modules} {learningPath?.number_of_modules === 1 ? "módulo" : "módulos"}
+                    </span>
                 </div>
                 <div className="row">
                     {learningPath?.modules.sort((a, b) => a.id - b.id).map((module, index) => {
@@ -100,13 +104,17 @@ const CoursePage = () => {
                 </div>
             </div>
             {verifyUser() === "student" ? <div className="col">
-                <div className="card">
-                    <div className="card-body">
-                        <h4>Estado de tu aprendizaje</h4>
-                        <p>Progreso de la ruta</p>
-                        <p>{progressPath()} % ({lessonsDoneOfPath()}/{totalLessonsOfPath()} lecciones)</p>
-                        <div className="progress" role="progressbar">
-                            <div className="progress-bar"
+                <div className="card border-0 shadow-sm">
+                    <div className="card-body p-4">
+                        <span className="badge bg-primary-subtle text-primary-emphasis mb-2">
+                            Tu avance
+                        </span>
+                        <h4 className="fw-bold mb-1">Estado de tu aprendizaje</h4>
+                        <p className="text-muted small mb-3">
+                            {progressPath()}% completado ({lessonsDoneOfPath()}/{totalLessonsOfPath()} lecciones)
+                        </p>
+                        <div className="progress" role="progressbar" style={{ height: "10px" }}>
+                            <div className="progress-bar bg-primary"
                                 style={{ width: `${progressPath()}%` }}></div>
                         </div>
                     </div>

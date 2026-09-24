@@ -28,7 +28,7 @@ export const HowItWorks = () => {
                         <div className="col-12 col-md-4" key={paso.numero}>
                             <div className="text-center px-3">
                                 <div
-                                    className="rounded-circle bg-dark text-white d-inline-flex align-items-center justify-content-center fw-bold mb-3"
+                                    className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center fw-bold mb-3"
                                     style={{ width: "48px", height: "48px" }}
                                 >
                                     {paso.numero}

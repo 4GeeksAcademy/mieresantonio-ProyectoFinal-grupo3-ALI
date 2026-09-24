@@ -2,41 +2,40 @@ import { Link } from "react-router-dom";
 
 const CourseDescription = ({ data, userType }) => {
 
-    return <div className="container bg-secondary rounded-4 p-4">
-        <div className="row">
+    const totalLessons = data?.modules.reduce((num, module) =>
+        num + module.lessons.length, 0);
+
+    return <div className="container bg-dark text-white rounded-4 p-4 p-md-5">
+        <div className="row align-items-center">
             <div className="col-md-6 d-flex flex-column justify-content-between">
-                <div className="row">
-                    <div className="col-auto bg-success-subtle rounded ms-3 mb-1">
+                <div className="d-flex flex-wrap gap-2 mb-3">
+                    <span className="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2">
                         {data?.level}
-                    </div>
-                    <div className="col-auto bg-white rounded ms-3 mb-1">
+                    </span>
+                    <span className="badge bg-light text-dark rounded-pill px-3 py-2">
                         <i className="fa-regular fa-clock"></i> {data?.time_required}
-                    </div>
-                    <div className="col-auto bg-white rounded ms-3 mb-1">
-                        <i className="fa-solid fa-book"></i> {data?.modules.reduce((num, module) =>
-                            num + module.lessons.length, 0)} {data?.modules.reduce((num, module) =>
-                            num + module.lessons.length, 0) === 1 ? "Lección" : "Lecciones"}
-                    </div>
+                    </span>
+                    <span className="badge bg-light text-dark rounded-pill px-3 py-2">
+                        <i className="fa-solid fa-book"></i> {totalLessons} {totalLessons === 1 ? "Lección" : "Lecciones"}
+                    </span>
                 </div>
-                <div className="row">
-                    <h3 className="fs-1">{data?.title}</h3>
-                    <p>{data?.description}</p>
+                <div>
+                    <h3 className="fw-bold display-6">{data?.title}</h3>
+                    <p className="text-white-50">{data?.description}</p>
                 </div>
-                <div className="row justify-content-start">
-                    {userType === "student" ? <div className="col-auto my-1">
-                        <Link to={`/lesson/${data?.id}/${data?.modules[0].lessons[0].id}`} className="btn btn-info rounded-5">
+                <div className="d-flex flex-wrap gap-2 mt-2">
+                    {userType === "student" ? (
+                        <Link to={`/lesson/${data?.id}/${data?.modules[0].lessons[0].id}`} className="btn btn-primary rounded-pill px-4">
                             <i className="fa-solid fa-circle-play"></i> Comenzar ahora
                         </Link>
-                    </div> : ""}
-                    <div className="col-auto my-1">
-                        <Link to="/courses" className="btn btn-outline-light rounded-5">
-                            <i className="fa-solid fa-arrow-left-long"></i> Ver todas las rutas
-                        </Link>
-                    </div>
+                    ) : ""}
+                    <Link to="/courses" className="btn btn-outline-light rounded-pill px-4">
+                        <i className="fa-solid fa-arrow-left-long"></i> Ver todas las rutas
+                    </Link>
                 </div>
             </div>
-            <div className="col-md-6 align-content-center">
-                <img className="img-fluid float-end rounded" src={data?.image_url} />
+            <div className="col-md-6 align-content-center mt-4 mt-md-0">
+                <img className="img-fluid rounded-3 shadow" src={data?.image_url} alt={data?.title} />
             </div>
         </div>
     </div>
